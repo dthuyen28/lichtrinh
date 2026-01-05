@@ -394,6 +394,9 @@ body {
         width: 260px;
         transform: translateX(-100%);
     }
+    .sidebar:not(.hidden) ~ #toggle-sidebar-btn {
+        display: none;
+    }
     .sidebar:not(.hidden) {
         transform: translateX(0);
     }
@@ -489,3 +492,4 @@ body {
         display: none !important;
     }
 }
+
