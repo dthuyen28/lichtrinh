@@ -1,0 +1,491 @@
+/* ================= RESET ================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+    background: linear-gradient(180deg, #fdf4ff, #eef2ff);
+    color: #334155;
+}
+
+/* ================= APP ================= */
+.app {
+    display: flex;
+    height: 100vh;
+    padding: 24px;
+    gap: 20px;
+    overflow: hidden;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+    width: 250px;
+    background: #f5f5f5;
+    border-radius: 28px;
+    padding: 26px 22px;
+    box-shadow: 0 20px 40px rgba(124, 131, 253, 0.15);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+}
+
+.sidebar h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #7c83fd;
+    margin-bottom: 26px;
+}
+
+.sidebar.hidden {
+    transform: translateX(-100%);
+}
+
+/* NAV */
+.nav {
+    border: none;
+    background: #eef2ff;
+    color: #475569;
+    padding: 14px 16px;
+    border-radius: 16px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.25s;
+}
+
+.nav:hover {
+    background: #e0e7ff;
+}
+
+.nav.active {
+    background: linear-gradient(135deg, #a5b4fc, #818cf8);
+    color: white;
+    box-shadow: 0 10px 20px rgba(99,102,241,0.35);
+}
+
+/* PROJECTS */
+.projects {
+    margin-top: 28px;
+    flex: 1;
+}
+
+.projects h4 {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 10px;
+}
+
+#projectList {
+    list-style: none;
+}
+
+#projectList li {
+    padding: 12px 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    color: #475569;
+    margin-bottom: 6px;
+    transition: 0.2s;
+}
+
+#projectList li:hover {
+    background: #f1f5f9;
+}
+
+#projectList li.active {
+    background: #ede9fe;
+    color: #6d28d9;
+    font-weight: 600;
+}
+
+#addProjectBtn {
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 16px;
+    border: 2px dashed #c7d2fe;
+    background: transparent;
+    color: #6366f1;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ================= MAIN ================= */
+.main {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 32px 36px;
+    box-shadow: 0 20px 40px rgba(124, 131, 253, 0.15);
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* transition: margin-left 0.3s ease; */
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 26px;
+}
+
+.header h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #4338ca;
+}
+
+.header-controls {
+    display: flex;
+    gap: 12px;
+}
+
+#filter-select {
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    background: #f8fafc;
+}
+
+#add-btn {
+    padding: 12px 20px;
+    border-radius: 16px;
+    border: none;
+    background: linear-gradient(135deg, #f9a8d4, #f472b6);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(244,114,182,0.4);
+}
+
+#add-btn:hover {
+    opacity: 0.9;
+}
+
+/* ================= BOARD ================= */
+.board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    min-width: 850px; 
+    width: 100%;
+}
+
+.board > div {
+    background: #f8fafc;
+    border-radius: 22px;
+    padding: 14px;
+}
+
+.board h2 {
+    font-size: 14px;
+    text-align: center;
+    padding: 10px;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.column-task h2 { background: #e0e7ff; color: #3730a3; }
+.column-category h2 { background: #fce7f3; color: #9d174d; }
+.column-deadline h2 { background: #fef9c3; color: #92400e; }
+.column-status h2 { background: #ede9fe; color: #5b21b6; }
+
+/* TASK LIST */
+.task-list-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* TASK ITEM */
+.task-item {
+    position: relative;
+    background: white;
+    padding: 12px 14px;
+    border-radius: 16px;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, background 0.2s;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    word-break: break-word; /* Để text tự xuống dòng khi quá hẹp */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.task-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(124,131,253,0.25);
+}
+
+.task-item.todo {
+    border-left: 6px solid #fde68a;
+}
+
+.task-item.done {
+    border-left: 6px solid #86efac;
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.task-item.status {
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.task-item.selected {
+    background: #ffe4f1;
+    border-radius: 8px;
+}
+
+/* ===== Swipe delete iOS style ===== */
+.task-item.swiping {
+    transition: none;
+}
+
+.task-item.delete-bg {
+    background: #ffb3b3;
+}
+
+.task-item::after {
+    content: "🗑️ Xóa";
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    color: #b00020;
+    font-weight: bold;
+}
+
+.task-item.delete-bg::after {
+    opacity: 1;
+}
+
+/* ================= MODAL ================= */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(124, 131, 253, 0.35);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    width: 420px;
+    background: white;
+    border-radius: 28px;
+    padding: 24px 26px;
+    box-shadow: 0 30px 60px rgba(124,131,253,0.35);
+}
+
+.modal-content h3 {
+    font-size: 22px;
+    color: #7c83fd;
+    margin-bottom: 14px;
+}
+
+.modal-content label {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.modal-content input,
+.modal-content select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 12px;
+}
+
+/* MODAL BUTTONS */
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-save {
+    background: #86efac;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-save:hover {
+    background: #3fe77d;
+}
+
+.btn-cancel {
+    background: #fca5a5;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-cancel:hover {
+    background: #ffb3c6;
+}
+
+.btn-delete {
+    background: #ffd6e0;
+    color: #8a1c3a;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-delete:hover {
+    background: #ffb3c6;
+}
+
+/* ================= RESPONSIVE ================= */
+/* @media (max-width: 1000px) {
+    .board {
+        grid-template-columns: 1fr 1fr;
+    }
+} */
+
+@media (max-width: 650px) {
+    .board {
+        grid-template-columns: repeat(4, 1fr);
+        min-width: 800px;
+    }
+}
+#toggle-sidebar-btn {
+    display: none; /* Mặc định ẩn trên màn hình lớn */
+}
+@media screen and (max-width: 768px) {
+    .app {
+        padding: 0;
+        height: 100vh;
+        gap: 0;
+    }
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
+        border-radius: 0 20px 20px 0;
+        transition: transform 0.3s ease;
+        width: 260px;
+        transform: translateX(-100%);
+    }
+    .sidebar:not(.hidden) {
+        transform: translateX(0);
+    }
+
+    .main {
+        padding: 70px 10px 20px 10px; /* Chừa chỗ cho nút menu */
+        border-radius: 0px;
+        width: 100%;
+        overflow-x: auto;
+    }
+    .board {
+        display: grid !important; /* Chuyển từ Grid sang Flex chiều dọc */
+        flex-direction: repeat(4, 1fr) !important;
+        min-width: 850px !important; 
+        gap: 15px;
+    }
+
+    .board > div {
+        width: auto;
+        min-width: 200px;
+    }
+
+    .main.sidebar-open {
+        margin-left: 250px;
+    }
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .header-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    #add-btn {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+
+    /* Modal cho mobile */
+    .modal-content {
+        width: 90%;
+        padding: 20px;
+    }
+
+    #toggle-sidebar-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 1100;
+        width: 42px;
+        height: 42px;
+        background: #7c83fd;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+    }
+
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.4);
+        z-index: 9;
+    }
+
+    .overlay.active {
+        display: block;
+        z-index: 999;
+    }
+}
+
+@media screen and (min-width: 769px) {
+    .sidebar.hidden {
+        display: none !important; 
+    }
+    .sidebar {
+        transform: translateX(0) !important; /* Luôn hiện sidebar */
+        position: relative;
+    }
+
+    .overlay {
+        display: none !important;
+    }
+}
