@@ -181,6 +181,9 @@ toggleBtn.addEventListener('click', () => {
     sidebar.classList.toggle('hidden');
     main.classList.toggle('sidebar-open');
     overlay.classList.toggle('active');
+    if (!sidebar.classList.contains('hidden')) {
+        toggleBtn.style.display = 'none';
+    }
 });
 
 // Ẩn sidebar khi click overlay
@@ -188,6 +191,7 @@ overlay.addEventListener('click', () => {
     sidebar.classList.add('hidden');
     main.classList.remove('sidebar-open');
     overlay.classList.remove('active');
+    toggleBtn.style.display = 'flex';
 });
 
 // Ẩn/hiện tự động theo kích thước màn hình
@@ -196,6 +200,7 @@ function checkWidth() {
         sidebar.classList.add('hidden');
         overlay.classList.remove('active');
         main.classList.remove('sidebar-open');
+        toggleBtn.style.display = 'flex';
     } else {
         sidebar.classList.remove('hidden');
         main.classList.remove('sidebar-open');
@@ -455,3 +460,4 @@ function enableSwipeDelete() {
 })();
 
 document.addEventListener("DOMContentLoaded", Controller.init);
+
