@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý công việc cá nhân</title>
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<button id="toggle-sidebar-btn" class="toggle-btn">☰</button>
+<div id="overlay" class="overlay"></div>
+
+<div class="app">
+
+    <!-- ========== SIDEBAR (PROJECT / FILTER) ========== -->
+    <aside class="sidebar">
+        <h2>To-do List</h2>
+
+        <button class="nav active" data-view="all">📋 Tất cả</button>
+        <button class="nav" data-view="today">📅 Hôm nay</button>
+        <button class="nav" data-view="upcoming">📆 Sắp tới</button>
+        <button class="nav" data-view="done">✅ Đã xong</button>
+
+        <div class="projects">
+            <h4>Danh mục</h4>
+            <ul id="projectList">
+                <!-- render project -->
+            </ul>
+            <button id="addProjectBtn">+ Thêm danh mục</button>
+        </div>
+    </aside>
+
+    <!-- ========== MAIN ========== -->
+    <main class="main">
+
+        <!-- HEADER -->
+        <header class="header">
+            <h1 id="pageTitle">Tất cả công việc</h1>
+
+            <div class="header-controls">
+                <select id="filter-select">
+                    <option value="all">Tất cả trạng thái</option>
+                    <option value="todo">Đang làm</option>
+                    <option value="done">Đã xong</option>
+                </select>
+
+                <button id="add-btn">+ Thêm công việc</button>
+            </div>
+        </header>
+
+        <!-- BOARD -->
+        <section class="board">
+            <div class="column-task">
+                <h2>📋 Nhiệm vụ</h2>
+                <div id="col-text" class="task-list-col"></div>
+            </div>
+
+            <div class="column-category">
+                <h2>🏷️ Danh mục</h2>
+                <div id="col-category" class="task-list-col"></div>
+            </div>
+
+            <div class="column-deadline">
+                <h2>⏰ Hạn chót</h2>
+                <div id="col-deadline" class="task-list-col"></div>
+            </div>
+
+            <div class="column-status">
+                <h2>⚙️ Trạng thái</h2>
+                <div id="col-status" class="task-list-col"></div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- ========== MODAL ADD TASK ========== -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h3>Tạo việc mới</h3>
+
+        <input type="text" id="task-input"
+               placeholder="Tên nhiệm vụ (vd: Lý luận & phương pháp)...">
+
+        <label>Danh mục:</label>
+        <select id="category-input"></select>
+
+        <label>Hạn chót:</label>
+        <input type="datetime-local" id="deadline-input">
+
+        <label>Mức độ ưu tiên:</label>
+        <select id="priority-input">
+            <option value="high">🔴 Quan trọng</option>
+            <option value="normal" selected>🟡 Bình thường</option>
+            <option value="low">🟢 Việc phụ</option>
+        </select>
+
+        <div class="modal-buttons">
+            <button id="save-btn" class="btn-save">Lưu</button>
+            <button id="delete-btn" class="btn-delete">Xóa</button>
+            <button id="cancel-btn" class="btn-cancel">Hủy</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
