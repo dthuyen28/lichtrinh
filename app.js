@@ -1,6 +1,3 @@
-/***********************
- * MODEL
- ***********************/
 const Model = (() => {
     let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
     let projects = JSON.parse(localStorage.getItem("projects")) || ["Cá nhân", "Học tập"];
@@ -10,10 +7,10 @@ const Model = (() => {
         localStorage.setItem("projects", JSON.stringify(projects));
     }
 
-    // migrate task cũ
     tasks.forEach((t, i) => {
         if (!t.id) t.id = Date.now() + i;
         if (!t.status) t.status = "todo";
+        if (t.notified === undefined) t.notified = false;
     });
     save();
 
@@ -48,9 +45,7 @@ const Model = (() => {
 })();
 
 
-/***********************
- * VIEW
- ***********************/
+/*VIEW*/
 const View = (() => {
 
     const cols = {
@@ -154,9 +149,7 @@ const View = (() => {
 })();
 
 
-/***********************
- * CONTROLLER
- ***********************/
+/*CONTROLLER*/
 const Controller = (() => {
 
     let currentView = "all";
@@ -170,55 +163,60 @@ const Controller = (() => {
     const categoryInput = document.getElementById("category-input");
     const deadlineInput = document.getElementById("deadline-input");
     const priorityInput = document.getElementById("priority-input");
+    const remindSelect = document.getElementById("remind-select");
 
     const sidebar = document.querySelector('.sidebar');
-const toggleBtn = document.getElementById('toggle-sidebar-btn');
-const overlay = document.getElementById('overlay');
-const main = document.querySelector('.main');
+    const toggleBtn = document.getElementById('toggle-sidebar-btn');
+    const overlay = document.getElementById('overlay');
+    const main = document.querySelector('.main');
 
-// Mở/ẩn sidebar bằng nút
-toggleBtn.addEventListener('click', () => {
-    sidebar.classList.toggle('hidden');
-    main.classList.toggle('sidebar-open');
-    overlay.classList.toggle('active');
-    if (!sidebar.classList.contains('hidden')) {
-        toggleBtn.style.display = 'none';
-    }
-});
+    // Mở/ẩn sidebar bằng nút
+    toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('hidden');
+        main.classList.toggle('sidebar-open');
+        overlay.classList.toggle('active');
+        if (!sidebar.classList.contains('hidden')) {
+            toggleBtn.style.display = 'none';
+        }
+    });
 
-// Ẩn sidebar khi click overlay
-overlay.addEventListener('click', () => {
-    sidebar.classList.add('hidden');
-    main.classList.remove('sidebar-open');
-    overlay.classList.remove('active');
-    toggleBtn.style.display = 'flex';
-});
-
-// Ẩn/hiện tự động theo kích thước màn hình
-function checkWidth() {
-    if (window.innerWidth < 768) {
+    // Ẩn sidebar khi click overlay
+    overlay.addEventListener('click', () => {
         sidebar.classList.add('hidden');
-        overlay.classList.remove('active');
         main.classList.remove('sidebar-open');
+        overlay.classList.remove('active');
         toggleBtn.style.display = 'flex';
-    } else {
-        sidebar.classList.remove('hidden');
-        main.classList.remove('sidebar-open');
-        overlay.classList.remove('active');
-    }
-}
+    });
 
-// Gọi khi load trang và resize
-window.addEventListener('resize', checkWidth);
-window.addEventListener('load', checkWidth);
+    // Ẩn/hiện tự động theo kích thước màn hình
+    function checkWidth() {
+        if (window.innerWidth < 768) {
+            sidebar.classList.add('hidden');
+            overlay.classList.remove('active');
+            main.classList.remove('sidebar-open');
+            toggleBtn.style.display = 'flex';
+        } else {
+            sidebar.classList.remove('hidden');
+            main.classList.remove('sidebar-open');
+            overlay.classList.remove('active');
+        }
+    }
+
+    // Gọi khi load trang và resize
+    window.addEventListener('resize', checkWidth);
+    window.addEventListener('load', checkWidth);
 
     function init() {
         View.renderProjects(Model.getProjects());
         render();
 
+
         document.getElementById("add-btn").onclick = openModal;
         document.getElementById("cancel-btn").onclick = closeModal;
         document.getElementById("save-btn").onclick = saveTask;
+
+        const notifyBtn = document.getElementById("notifyBtn");
+        notifyBtn.onclick = openBellToast;
 
         // CLICK → SỬA
         document.getElementById("col-text").onclick = openEdit;
@@ -248,58 +246,116 @@ window.addEventListener('load', checkWidth);
 
         // ⌨️ PHÍM TẮT
         document.addEventListener("keydown", handleKey);
+        setInterval(checkDeadline, 30 * 1000);
     }
-    /******** Swipe to delete (mobile) ********/
-function enableSwipeDelete() {
-    let startX = 0;
-    let currentItem = null;
+    function closeToast() {
+        document.getElementById("notify-toast").classList.add("hidden");
+    }
 
-    document.getElementById("col-text").addEventListener("touchstart", e => {
-        const item = e.target.closest(".task-item");
-        if (!item) return;
+    function renderToast(tasks, emptyMessage = "Không có thông báo nào") {
+        const toast = document.getElementById("notify-toast");
+        const list = document.getElementById("toast-list");
 
-        startX = e.touches[0].clientX;
-        currentItem = item;
-        item.classList.add("swiping");
-    });
+        list.innerHTML = "";
 
-    document.getElementById("col-text").addEventListener("touchmove", e => {
-        if (!currentItem) return;
-
-        const dx = e.touches[0].clientX - startX;
-        if (dx < 0) {
-            currentItem.style.transform = `translateX(${dx}px)`;
-            if (dx < -80) {
-                currentItem.classList.add("delete-bg");
-            }
-        }
-    });
-
-    document.getElementById("col-text").addEventListener("touchend", () => {
-        if (!currentItem) return;
-
-        const dx = currentItem.style.transform
-            ? parseInt(currentItem.style.transform.replace("translateX(", ""))
-            : 0;
-
-        // ✅ đủ xa → xóa
-        if (dx < -120) {
-            const id = currentItem.dataset.id;
-            const index = Model.findIndexById(id);
-            if (index !== -1) {
-                Model.deleteTask(index);
-            }
-            render();
+        if (tasks.length === 0) {
+            const li = document.createElement("li");
+            li.className = "empty-toast";
+            li.textContent = "📭 " + emptyMessage;
+            list.appendChild(li);
         } else {
-            // ❌ chưa đủ → trả về
-            currentItem.style.transform = "";
-            currentItem.classList.remove("delete-bg");
+            tasks.forEach(t => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                <strong>${t.title}</strong><br>
+                <span>⏰ ${new Date(t.deadline).toLocaleString("vi-VN")}</span>
+            `;
+                list.appendChild(li);
+            });
         }
 
-        currentItem.classList.remove("swiping");
-        currentItem = null;
-    });
-}
+        toast.classList.remove("hidden");
+    }
+    function checkDeadline() {
+        const now = new Date();
+
+        const tasks = Model.getTasks().filter(t => {
+            if (!t.deadline || t.status === "done" || t.notified) return false;
+
+            const deadline = new Date(t.deadline);
+            const remindTime = new Date(deadline.getTime() - t.remindBefore * 60000);
+
+            return now >= remindTime;
+        });
+
+        if (tasks.length === 0) return;
+
+        renderToast(tasks, "Không có thông báo");
+
+        tasks.forEach(t => {
+            t.notified = true;
+            Model.updateTask(Model.findIndexById(t.id), t);
+        });
+    }
+    function openBellToast() {
+        const tasks = Model.getTasks().filter(t =>
+            t.deadline &&
+            t.status !== "done" &&
+            t.notified
+        );
+
+        renderToast(tasks, "Không có thông báo nào");
+    }
+
+
+    function enableSwipeDelete() {
+        let startX = 0;
+        let currentItem = null;
+
+        document.getElementById("col-text").addEventListener("touchstart", e => {
+            const item = e.target.closest(".task-item");
+            if (!item) return;
+
+            startX = e.touches[0].clientX;
+            currentItem = item;
+            item.classList.add("swiping");
+        });
+
+        document.getElementById("col-text").addEventListener("touchmove", e => {
+            if (!currentItem) return;
+
+            const dx = e.touches[0].clientX - startX;
+            if (dx < 0) {
+                currentItem.style.transform = `translateX(${dx}px)`;
+                if (dx < -80) {
+                    currentItem.classList.add("delete-bg");
+                }
+            }
+        });
+
+        document.getElementById("col-text").addEventListener("touchend", () => {
+            if (!currentItem) return;
+
+            const dx = currentItem.style.transform
+                ? parseInt(currentItem.style.transform.replace("translateX(", ""))
+                : 0;
+
+            if (dx < -120) {
+                const id = currentItem.dataset.id;
+                const index = Model.findIndexById(id);
+                if (index !== -1) {
+                    Model.deleteTask(index);
+                }
+                render();
+            } else {
+                currentItem.style.transform = "";
+                currentItem.classList.remove("delete-bg");
+            }
+
+            currentItem.classList.remove("swiping");
+            currentItem = null;
+        });
+    }
 
 
     function handleKey(e) {
@@ -339,6 +395,7 @@ function enableSwipeDelete() {
         editingIndex = null;
         taskInput.value = "";
         deadlineInput.value = "";
+        remindSelect.value = 60;
     }
 
     function openEdit(e) {
@@ -356,6 +413,7 @@ function enableSwipeDelete() {
         categoryInput.value = task.category;
         deadlineInput.value = task.deadline || "";
         priorityInput.value = task.priority;
+        remindSelect.value = task.remindBefore || 60;
 
         openModal();
     }
@@ -377,21 +435,23 @@ function enableSwipeDelete() {
         const title = taskInput.value.trim();
         if (!title) return;
 
+        const oldTask = editingIndex !== null
+            ? Model.getTasks()[editingIndex]
+            : null;
+
         const data = {
-            id: editingIndex !== null
-                ? Model.getTasks()[editingIndex].id
-                : Date.now(),
+            id: oldTask ? oldTask.id : Date.now(),
             title,
             category: categoryInput.value,
             deadline: deadlineInput.value,
             priority: priorityInput.value,
-            status: editingIndex !== null
-                ? Model.getTasks()[editingIndex].status
-                : "todo",
-            createdAt: new Date()
+            remindBefore: Number(remindSelect.value),
+            status: oldTask ? oldTask.status : "todo",
+            createdAt: oldTask ? oldTask.createdAt : new Date(),
+            notified: oldTask ? oldTask.notified : false
         };
 
-        if (editingIndex !== null) {
+        if (oldTask) {
             Model.updateTask(editingIndex, data);
         } else {
             Model.addTask(data);
@@ -400,6 +460,7 @@ function enableSwipeDelete() {
         closeModal();
         render();
     }
+
 
     function selectProject(e) {
         if (!e.target.dataset.project) return;
@@ -456,8 +517,9 @@ function enableSwipeDelete() {
         View.renderTasks(tasks, selectedTaskId);
     }
 
+    window.closeToast = closeToast;
+
     return { init };
 })();
 
 document.addEventListener("DOMContentLoaded", Controller.init);
-
