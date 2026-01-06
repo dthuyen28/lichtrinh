@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Quản lý công việc cá nhân</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -11,8 +11,6 @@
 <div id="overlay" class="overlay"></div>
 
 <div class="app">
-
-    <!-- ========== SIDEBAR (PROJECT / FILTER) ========== -->
     <aside class="sidebar">
         <h2>To-do List</h2>
 
@@ -23,21 +21,19 @@
 
         <div class="projects">
             <h4>Danh mục</h4>
-            <ul id="projectList">
-                <!-- render project -->
-            </ul>
+            <ul id="projectList"></ul>
             <button id="addProjectBtn">+ Thêm danh mục</button>
         </div>
     </aside>
 
-    <!-- ========== MAIN ========== -->
+
     <main class="main">
 
-        <!-- HEADER -->
         <header class="header">
             <h1 id="pageTitle">Tất cả công việc</h1>
 
             <div class="header-controls">
+                <button id="notifyBtn" class="icon-btn">🔔</button>
                 <select id="filter-select">
                     <option value="all">Tất cả trạng thái</option>
                     <option value="todo">Đang làm</option>
@@ -48,7 +44,6 @@
             </div>
         </header>
 
-        <!-- BOARD -->
         <section class="board">
             <div class="column-task">
                 <h2>📋 Nhiệm vụ</h2>
@@ -73,7 +68,6 @@
     </main>
 </div>
 
-<!-- ========== MODAL ADD TASK ========== -->
 <div id="modal" class="modal">
     <div class="modal-content">
         <h3>Tạo việc mới</h3>
@@ -86,12 +80,18 @@
 
         <label>Hạn chót:</label>
         <input type="datetime-local" id="deadline-input">
-
+        
         <label>Mức độ ưu tiên:</label>
         <select id="priority-input">
             <option value="high">🔴 Quan trọng</option>
             <option value="normal" selected>🟡 Bình thường</option>
             <option value="low">🟢 Việc phụ</option>
+        </select>
+        <label>Nhắc trước</label>
+        <select id="remind-select">
+            <option value="60">⏰ 1 giờ</option>
+            <option value="30">⏰ 30 phút</option>
+            <option value="10">⏰ 10 phút</option>
         </select>
 
         <div class="modal-buttons">
@@ -101,8 +101,14 @@
         </div>
     </div>
 </div>
+<div id="notify-toast" class="toast hidden">
+  <div class="toast-header">
+    <span>⏰ Thông báo</span>
+    <button onclick="closeToast()">✕</button>
+  </div>
+  <ul id="toast-list"></ul>
+</div>
 
-<script type="module" src="app.js"></script>
+<script type="module" src="js/app.js"></script>
 </body>
 </html>
-
